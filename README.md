@@ -1,6 +1,6 @@
-# segmentation-migration
+# aerospike-migration
 
-A CLI application to migrate segmentation data from postgres to aero-spike
+A CLI application to migrate aerospike data from postgres to aero-spike
 
 ## Usage
 
@@ -10,15 +10,8 @@ Build and create the jar with
 make create-jar
 ```
 
-A jar with name `segmentation-migration.jar` is created. Checkout the command line options with
+A jar with name `aerospike-migration.jar` is created. Checkout the command line options with,
 
 ```
-java -jar segmentation-migration.jar --help
-```
-
-Example, migrate the segments table to aerospike using a csv
-
-```
-java -jar segmentation-migration.jar --hosts "localhost" --namespace "test" ms \
- --filepath "/Users/foo/segmentation-migration/segments-1.csv" --batch-size 10
+java -jar aerospike-migration.jar --help
 ```

@@ -1,4 +1,8 @@
-.nrepl-port
+
+*.txt
 .idea/
-segmentation-migration.*
+.nrepl-port
+segmentation-migration.iml
+segmentation-migration.har
 target/
+segmentation-migration.jar

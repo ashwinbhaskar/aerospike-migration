@@ -1,6 +1,6 @@
-(ns segmentation-migration.core-test
+(ns aerospike-migration.core-test
   (:require [clojure.test :refer :all]
-            [segmentation-migration.core :refer :all]))
+            [aerospike-migration.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

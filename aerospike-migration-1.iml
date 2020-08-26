@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module cursive.leiningen.project.LeiningenProjectsManager.displayName="aerospike-migration:0.1.0" cursive.leiningen.project.LeiningenProjectsManager.isLeinModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/dev-resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Leiningen: aerospike-clj:1.0.0" level="project" />
+    <orderEntry type="library" name="Leiningen: camel-snake-kebab:0.4.1" level="project" />
+    <orderEntry type="library" name="Leiningen: ch.qos.logback/logback-classic:1.2.3" level="project" />
+    <orderEntry type="library" name="Leiningen: ch.qos.logback/logback-core:1.2.3" level="project" />
+    <orderEntry type="library" name="Leiningen: cli-matic:0.4.3" level="project" />
+    <orderEntry type="library" name="Leiningen: clojure-complete:0.2.5" level="project" />
+    <orderEntry type="library" name="Leiningen: com.aerospike/aerospike-client:4.4.15" level="project" />
+    <orderEntry type="library" name="Leiningen: com.fasterxml.jackson.core/jackson-annotations:2.11.2" level="project" />
+    <orderEntry type="library" name="Leiningen: com.fasterxml.jackson.core/jackson-core:2.11.2" level="project" />
+    <orderEntry type="library" name="Leiningen: com.fasterxml.jackson.core/jackson-databind:2.11.2" level="project" />
+    <orderEntry type="library" name="Leiningen: com.fasterxml.jackson.datatype/jackson-datatype-jsr310:2.11.2" level="project" />
+    <orderEntry type="library" name="Leiningen: com.zaxxer/HikariCP:3.4.5" level="project" />
+    <orderEntry type="library" name="Leiningen: expound:0.8.4" level="project" />
+    <orderEntry type="library" name="Leiningen: funcool/promesa:5.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: hikari-cp:2.13.0" level="project" />
+    <orderEntry type="library" name="Leiningen: metosin/jsonista:0.2.7" level="project" />
+    <orderEntry type="library" name="Leiningen: mount:0.1.16" level="project" />
+    <orderEntry type="library" name="Leiningen: nrepl:0.6.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.checkerframework/checker-qual:3.5.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/clojure:1.10.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/core.specs.alpha:0.2.44" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/java.data:1.0.78" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/spec.alpha:0.2.176" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/tools.cli:1.0.194" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/tools.logging:1.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.gnu/gnu-crypto:2.0.1" level="project" />
+    <orderEntry type="library" name="Leiningen: org.luaj/luaj-jse:3.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.mindrot/jbcrypt:0.4" level="project" />
+    <orderEntry type="library" name="Leiningen: org.postgresql/postgresql:42.2.16" level="project" />
+    <orderEntry type="library" name="Leiningen: org.slf4j/slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="Leiningen: org.tobereplaced/lettercase:1.0.0" level="project" />
+    <orderEntry type="library" name="Leiningen: pjstadig/humane-test-output:0.9.0" level="project" />
+    <orderEntry type="library" name="Leiningen: seancorfield/next.jdbc:1.1.582" level="project" />
+    <orderEntry type="library" name="Leiningen: vvvvalvalval/scope-capture:0.3.2" level="project" />
+  </component>
+</module>
