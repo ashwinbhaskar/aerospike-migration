@@ -1,27 +1,24 @@
 (ns aerospike-migration.util
   (:require [clojure.walk :refer [postwalk]]
             [camel-snake-kebab.core :as csk]
-            [clojure.string :as str])
+            [failjure.core :as f]
+            [jsonista.core :as j])
   (:import
-    (java.time Instant)))
+    (java.time Instant)
+    (java.io PushbackReader)
+    (org.postgresql.util PGobject)))
 
-(defn slice [v n]
-  (let [length (count v)]
-    (if (>= n length)
-      [(into [] v)]
-      (let [m (mod length n)]
-        (conj
-          (mapv #(into [] %) (partition n n v))
-          (into [] (drop (- length m) v)))))))
+(def mapper (j/object-mapper))
 
-(defn slice-lazy
-  [lazy-seq batch-size no-of-lines]
-  (if (>= batch-size no-of-lines)
-    [lazy-seq]
-    (let [m (mod no-of-lines batch-size)]
-      (concat
-        (partition batch-size batch-size lazy-seq)
-        [(drop (- no-of-lines m) lazy-seq)]))))
+(defn pg-object->map
+  [v]
+  (if (instance? PGobject v)
+    (let [type  (.getType v)
+          value (.getValue v)]
+      (if (#{"jsonb" "json"} type)
+        (with-meta (j/read-value value mapper) {:pgtype type})
+        value))
+    v))
 
 (defn now-utc-unix []
   (-> (Instant/now)
@@ -35,7 +32,19 @@
                      (csk/->kebab-case-keyword a)
                      a)))))
 
-(defn unit-type [u]
-  (if (str/blank? u)
-    "customer"
-    u))
+(defn load-edn
+  [file-path]
+  (-> (with-open [r (clojure.java.io/reader file-path)]
+        (clojure.edn/read (PushbackReader. r)))
+      (f/try*)))
+
+(defn- comma-separated-columns
+  [mapping relation]
+  (->> mapping
+      relation
+      :columns
+      (map str)))
+
+(defn prepare-query
+  [mapping relation]
+  (format "SELECT %s FROM %s" (comma-separated-columns mapping relation) (str relation)))

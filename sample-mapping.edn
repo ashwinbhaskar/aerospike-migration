@@ -1,0 +1,10 @@
+{:users {:columns [:id :name :phone :dob]
+         :name    {:name     "name"
+                   :function {:name :identity}}
+         :phone   {:bin      "phone"
+                   :function {:name :identify}}
+         :dob     {:bin      "dob"
+                   :function {:name :timestamp->epoch-seconds}}
+         :pk      {:keys    [:id]
+                   :prepend "user"
+                   :append  ""}}}

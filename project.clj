@@ -12,6 +12,7 @@
                  [org.postgresql/postgresql "42.2.16"]
                  [camel-snake-kebab "0.4.1"]
                  [ch.qos.logback/logback-classic "1.2.3"]
-                 [metosin/jsonista "0.2.7"]]
+                 [metosin/jsonista "0.2.7"]
+                 [failjure "2.0.0"]]
   :main aerospike-migration.core
   :repl-options {:init-ns aerospike-migration.core})
