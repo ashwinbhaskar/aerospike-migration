@@ -46,13 +46,3 @@
   (if (str/blank? s)
     s
     (fn s)))
-
-(defn timestamp->epoch-second
-  [^Timestamp ts]
-  (-> (.toInstant ts)
-      (.getEpochSecond)))
-
-
-(def functions {:identity                 identity
-                :timestamp->epoch-seconds timestamp->epoch-second
-                :->string                 str})
