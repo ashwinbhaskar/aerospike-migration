@@ -54,4 +54,4 @@
 
 (comment
   (start-aerospike-client "localhost" "test")
-  (start-postgres-datasource "127.0.0.1" "5432" "aerospike_service" "postgres" ""))
+  (start-postgres-datasource "127.0.0.1" "5432" "test" "postgres" ""))
