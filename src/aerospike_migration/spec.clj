@@ -21,7 +21,7 @@
 
 (spec/def ::validate-columns (fn [m]
                                (let [columns (::columns m)]
-                                 (->> (dissoc m ::columns ::pk-info)
+                                 (->> (dissoc m ::columns ::pk-info ::set-name)
                                       (every? (fn [[k v]]
                                                 (and (some #(= k %) columns)
                                                      (spec/valid? ::column v))))))))
