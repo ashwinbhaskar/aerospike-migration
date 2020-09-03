@@ -2,7 +2,8 @@
   (:require [clojure.walk :refer [postwalk]]
             [camel-snake-kebab.core :as csk]
             [failjure.core :as f]
-            [jsonista.core :as j])
+            [jsonista.core :as j]
+            [clojure.string :as str])
   (:import
     (java.time Instant)
     (java.io PushbackReader)
@@ -39,16 +40,12 @@
         (clojure.edn/read (PushbackReader. r)))
       (f/try*)))
 
-(defn- comma-separated-columns
-  [mapping relation]
-  (->> mapping
-       relation
-       :columns
-       (map str)))
-
-(defn prepare-query
-  [mapping relation]
-  (format "SELECT %s FROM %s" (comma-separated-columns mapping relation) (str relation)))
+(defn if-not-blank
+  "Applies the function fn on s if s is not blank"
+  [s fn]
+  (if (str/blank? s)
+    s
+    (fn s)))
 
 (defn timestamp->epoch-second
   [^Timestamp ts]
@@ -56,5 +53,5 @@
       (.getEpochSecond)))
 
 
-(def functions {:identity identity
+(def functions {:identity                 identity
                 :timestamp->epoch-seconds timestamp->epoch-second})
