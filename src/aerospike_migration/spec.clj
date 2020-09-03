@@ -1,5 +1,6 @@
 (ns aerospike-migration.spec
   (:require [clojure.spec.alpha :as spec]
+            [aerospike-migration.util :as u]
             [clojure.spec.alpha :as s]))
 
 (spec/def ::columns (spec/and sequential?
@@ -22,7 +23,10 @@
                                ::validate-columns))
 (spec/def ::root #(every? (fn [[k v]]
                            (and (keyword? k)
-                                (s/valid? ::relation v)))
+                                (spec/valid? ::relation v)))
                           %))
+
+(spec/def ::edn #(->> (u/load-edn %)
+                      (s/valid? ::root)))
 
 
