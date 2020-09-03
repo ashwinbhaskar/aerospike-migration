@@ -6,7 +6,8 @@
   (:import
     (java.time Instant)
     (java.io PushbackReader)
-    (org.postgresql.util PGobject)))
+    (org.postgresql.util PGobject)
+    (java.sql Timestamp)))
 
 (def mapper (j/object-mapper))
 
@@ -48,3 +49,12 @@
 (defn prepare-query
   [mapping relation]
   (format "SELECT %s FROM %s" (comma-separated-columns mapping relation) (str relation)))
+
+(defn timestamp->epoch-second
+  [^Timestamp ts]
+  (-> (.toInstant ts)
+      (.getEpochSecond)))
+
+
+(def functions {:identity identity
+                :timestamp->epoch-seconds timestamp->epoch-second})
