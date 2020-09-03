@@ -18,4 +18,5 @@
           :aerospike-migration.spec/pk-info  {:aerospike-migration.spec/pk-info.primary-keys [:id]
                                               :aerospike-migration.spec/pk-info.prepend      ""
                                               :aerospike-migration.spec/pk-info.append       ""
+                                              :aerospike-migration.spec/pk-info.delimiter    "_"
                                               :id                                            {:aerospike-migration.spec/function :->string}}}}
