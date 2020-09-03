@@ -12,9 +12,14 @@
                                               :aerospike-migration.spec/pk-info.delimiter    "_"
                                               :phone                                         {:aerospike-migration.spec/function :identity}}}
  :movies {:aerospike-migration.spec/set-name "movie"
-          :aerospike-migration.spec/columns  [:id :info]
-          :info                              {:aerospike-migration.spec/bin      "movie_info"
+          :aerospike-migration.spec/columns  [:id :info :release-date :name]
+          :info                              {:aerospike-migration.spec/bin      "info"
                                               :aerospike-migration.spec/function :identity}
+          :name                              {:aerospike-migration.spec/bin      "name"
+                                              :aerospike-migration.spec/function :identity}
+          :release-date                      {:aerospike-migration.spec/bin           "release_date"
+                                              :aerospike-migration.spec/function      :timestamp->string
+                                              :aerospike-migration.spec/function-args ["yyyy-MM-dd"]}
           :aerospike-migration.spec/pk-info  {:aerospike-migration.spec/pk-info.primary-keys [:id]
                                               :aerospike-migration.spec/pk-info.prepend      ""
                                               :aerospike-migration.spec/pk-info.append       ""

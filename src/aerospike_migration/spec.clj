@@ -2,7 +2,8 @@
   (:require [clojure.spec.alpha :as spec]
             [aerospike-migration.util :as u]
             [clojure.spec.alpha :as s]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [aerospike-migration.transformer :as t]))
 
 (spec/def ::non-blank-string (spec/and string? (complement str/blank?)))
 
@@ -11,11 +12,14 @@
 
 (spec/def ::columns ::keyword-seq)
 
-(spec/def ::function #{:identity :timestamp->epoch-seconds :->string})
+(spec/def ::function (set (keys t/functions)))
+
+(spec/def ::function-args sequential?)
 
 (spec/def ::bin string?)
 
-(spec/def ::column (spec/keys :req [::bin ::function]))
+(spec/def ::column (spec/keys :req [::bin ::function]
+                              :opt [::function-args]))
 
 (spec/def ::set-name ::non-blank-string)
 

@@ -1,12 +1,15 @@
 (ns aerospike-migration.relation
   (:require [aerospike-migration.util :as u]
+            [aerospike-migration.transformer :as t]
             [next.jdbc :as j]
             [aerospike-migration.postgres :refer [ds]]
             [aerospike-migration.spec :as s]
             [clojure.string :as str]
             [camel-snake-kebab.core :as csk]
             [aerospike-clj.client :as aero]
-            [aerospike-migration.aerospike :refer [client]]))
+            [aerospike-migration.aerospike :refer [client]])
+  (:import (java.util.function BiConsumer)
+           (java.util.concurrent CompletableFuture)))
 
 (defn- prepare-query
   [columns relation]
@@ -25,8 +28,12 @@
                         relation
                         column-name
                         ::s/function
-                        u/functions)]
-    (transformer value)))
+                        t/functions)
+        transformer-args (-> mapping
+                             relation
+                             column-name
+                             ::s/function-args)]
+    (apply transformer value transformer-args)))
 
 (defn- column->bin
   [mapping relation column-name value]
@@ -54,7 +61,7 @@
         append    (u/if-not-blank (::s/pk-info.append pk-info)
                                   #(str delimiter %))
         mapper    (fn [k]
-                    (let [transformer (u/functions (get-in pk-info [k ::s/function]))]
+                    (let [transformer (t/functions (get-in pk-info [k ::s/function]))]
                       (-> (k row)
                           transformer)))
         pks       (->> (map mapper (::s/pk-info.primary-keys pk-info))
@@ -62,6 +69,14 @@
     (str prepend
          pks
          append)))
+
+(defn- bi-consumer
+  []
+  (reify BiConsumer
+    (accept [_ _ exception]
+      (if (not (nil? exception))
+        (println (str "Exception: " exception))
+        (println "Row successfully migrated")))))
 
 (defn- migrate-relation
   [mapping [relation v]]
@@ -80,8 +95,12 @@
                       index      (index row (::s/pk-info v))]
                   {:data  data
                    :index index})))
-         (run! (fn [{:keys [data index]}]
-                 (aero/put client index set-name data -1))))))
+         (map (fn [{:keys [data index]}]
+                (-> (aero/put client index set-name data -1)
+                    (.whenCompleteAsync (bi-consumer)))))
+         (into-array CompletableFuture)
+         CompletableFuture/allOf
+         .join)))
 
 (defn migrate
   [m]
