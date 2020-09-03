@@ -6,3 +6,4 @@ segmentation-migration.iml
 segmentation-migration.har
 target/
 segmentation-migration.jar
+aerospike-migration.jar
