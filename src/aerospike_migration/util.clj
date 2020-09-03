@@ -54,4 +54,5 @@
 
 
 (def functions {:identity                 identity
-                :timestamp->epoch-seconds timestamp->epoch-second})
+                :timestamp->epoch-seconds timestamp->epoch-second
+                :->string                 str})

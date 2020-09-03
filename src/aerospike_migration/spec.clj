@@ -1,18 +1,23 @@
 (ns aerospike-migration.spec
   (:require [clojure.spec.alpha :as spec]
             [aerospike-migration.util :as u]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s]
+            [clojure.string :as str]))
+
+(spec/def ::non-blank-string (spec/and string? (complement str/blank?)))
 
 (spec/def ::keyword-seq (spec/and sequential?
                                   #(every? keyword? %)))
 
 (spec/def ::columns ::keyword-seq)
 
-(spec/def ::function #{:identity :timestamp->epoch-seconds})
+(spec/def ::function #{:identity :timestamp->epoch-seconds :->string})
 
 (spec/def ::bin string?)
 
 (spec/def ::column (spec/keys :req [::bin ::function]))
+
+(spec/def ::set-name ::non-blank-string)
 
 (spec/def ::validate-columns (fn [m]
                                (let [columns (::columns m)]
@@ -39,9 +44,10 @@
 
 (spec/def ::pk-info (spec/keys :req [::pk-info.append ::pk-info.delimiter ::pk-info.delimiter ::pk-info.primary-keys]))
 
-(spec/def ::relation (spec/and (spec/keys :req [::columns ::pk-info])
+(spec/def ::relation (spec/and (spec/keys :req [::columns ::pk-info ::set-name])
                                ::validate-columns
                                ::validate-primary-keys))
+
 (spec/def ::root #(every? (fn [[k v]]
                             (and (keyword? k)
                                  (spec/valid? ::relation v)))

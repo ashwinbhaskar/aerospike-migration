@@ -68,20 +68,20 @@
   (let [columns          (set (::s/columns v))
         columns-in-query (->> (map name columns)
                               (map #(csk/->snake_case %)))
-        query            (prepare-query columns-in-query (name relation))]
+        query            (prepare-query columns-in-query (name relation))
+        set-name         (::s/set-name v)]
     (->> (j/execute! ds [query])
          (map u/kebab-caseize)
          (map sanitize-row)
          (map (fn [row]
                 (let [index-keys (-> (select-keys row (get-in v [::s/pk-info ::s/pk-info.primary-keys]))
                                      keys)
-                      _          (println (str "index keys " index-keys))
                       data       (row->bin (apply #(dissoc row %) index-keys) mapping relation)
                       index      (index row (::s/pk-info v))]
                   {:data  data
                    :index index})))
          (run! (fn [{:keys [data index]}]
-                 (aero/put client index "users" data -1))))))
+                 (aero/put client index set-name data -1))))))
 
 (defn migrate
   [m]
