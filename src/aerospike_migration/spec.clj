@@ -21,9 +21,13 @@
                                                 (and (some #(= k %) columns)
                                                      (spec/valid? ::column v))))))))
 (spec/def ::validate-primary-keys (fn [m]
-                                    (let [columns      (set (::columns m))
+                                    (let [column?      (set (::columns m))
                                           primary-keys (get-in m [::pk-info ::pk-info.primary-keys])]
-                                      (every? columns primary-keys))))
+                                      (and (every? column? primary-keys)
+                                           (every? (fn [k]
+                                                     (->> (get-in m [::pk-info k ::function])
+                                                          (spec/valid? ::function)))
+                                                   primary-keys)))))
 
 (spec/def ::pk-info.prepend string?)
 
