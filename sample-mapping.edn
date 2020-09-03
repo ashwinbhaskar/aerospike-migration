@@ -1,10 +1,7 @@
-{:users {:columns [:id :name :phone :dob]
-         :name    {:name     "name"
-                   :function {:name :identity}}
-         :phone   {:bin      "phone"
-                   :function {:name :identify}}
-         :dob     {:bin      "dob"
-                   :function {:name :timestamp->epoch-seconds}}
-         :pk      {:keys    [:id]
-                   :prepend "user"
-                   :append  ""}}}
+{:users {:aerospike-migration.spec/columns [:id :name :phone :dob]
+        :name                             {:aerospike-migration.spec/bin      "name"
+                                           :aerospike-migration.spec/function :identity}
+        :phone                            {:aerospike-migration.spec/bin      "phone"
+                                           :aerospike-migration.spec/function :identity}
+        :dob                              {:aerospike-migration.spec/bin      "dob"
+                                           :aerospike-migration.spec/function :timestamp->epoch-seconds}}}
