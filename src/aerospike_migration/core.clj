@@ -23,11 +23,11 @@
   (System/setProperty "db_password" pass)
   (mount/start #'p/ds))
 
-(defn- migrate-relation
-  [{:keys [edn-filepath relation-name batch-size hosts namespace db-host db-port db-name db-user db-pass]}]
+(defn- migrate
+  [{:keys [edn-filepath hosts namespace db-host db-port db-name db-user db-pass]}]
   (start-aerospike-client hosts namespace)
   (start-postgres-datasource db-host db-port db-name db-user db-pass)
-  (r/migrate relation-name edn-filepath batch-size))
+  (r/migrate (u/load-edn edn-filepath)))
 
 (def CONFIGURATION
   {:command     "aerospike-database-migration"
@@ -41,12 +41,12 @@
                  {:option "db-name" :short "dbn" :type :string :default :present :as "Database name"}
                  {:option "db-user" :short "dbu" :type :string :default :present :as "Database user"}
                  {:option "db-pass" :short "dbps" :type :string :default :present :as "Database password"}]
-   :subcommands [{:command     "migrate-relations" :short "mrs"
+   :subcommands [{:command     "migrate" :short "mrs"
                   :description ["Migrate table from relational db to aerospike"]
                   :opts        [{:option "edn-filepath" :short "fp" :type :string :default :present :as "An edn file containing a mapping of the columns in relational db to bins in aerospike"
                                  :spec   ::s/edn}
                                 {:option "batch-size" :short "bsz" :type :int :default :present :as "The number of concurrent migrations that should be made"}]
-                  :runs        migrate-relation}]})
+                  :runs        migrate}]})
 
 (defn -main
   [& args]
