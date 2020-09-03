@@ -41,9 +41,9 @@
 (defn- comma-separated-columns
   [mapping relation]
   (->> mapping
-      relation
-      :columns
-      (map str)))
+       relation
+       :columns
+       (map str)))
 
 (defn prepare-query
   [mapping relation]

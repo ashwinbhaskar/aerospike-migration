@@ -44,7 +44,7 @@
    :subcommands [{:command     "migrate-relations" :short "mrs"
                   :description ["Migrate table from relational db to aerospike"]
                   :opts        [{:option "edn-filepath" :short "fp" :type :string :default :present :as "An edn file containing a mapping of the columns in relational db to bins in aerospike"
-                                 :spec ::s/edn}
+                                 :spec   ::s/edn}
                                 {:option "batch-size" :short "bsz" :type :int :default :present :as "The number of concurrent migrations that should be made"}]
                   :runs        migrate-relation}]})
 
