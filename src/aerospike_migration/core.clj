@@ -4,7 +4,8 @@
             [aerospike-migration.postgres :as p]
             [cli-matic.core :as cli]
             [aerospike-migration.relation :as r]
-            [aerospike-migration.util :as u])
+            [aerospike-migration.util :as u]
+            [aerospike-migration.spec :as s])
   (:gen-class))
 
 (defn- start-aerospike-client
@@ -28,11 +29,6 @@
   (start-postgres-datasource db-host db-port db-name db-user db-pass)
   (r/migrate relation-name edn-filepath batch-size))
 
-(defn- valid-edn?
-  [path]
-  (let [m (u/load-edn path)]
-    ()))
-
 (def CONFIGURATION
   {:command     "aerospike-database-migration"
    :description "A CLI to migrate data aerospike service db to aerospike"
@@ -45,12 +41,11 @@
                  {:option "db-name" :short "dbn" :type :string :default :present :as "Database name"}
                  {:option "db-user" :short "dbu" :type :string :default :present :as "Database user"}
                  {:option "db-pass" :short "dbps" :type :string :default :present :as "Database password"}]
-   :subcommands [{:command     "migrate-relation" :short "mmsp"
+   :subcommands [{:command     "migrate-relations" :short "mrs"
                   :description ["Migrate table from relational db to aerospike"]
                   :opts        [{:option "edn-filepath" :short "fp" :type :string :default :present :as "An edn file containing a mapping of the columns in relational db to bins in aerospike"
-                                 :spec }
-                                {:option "batch-size" :short "bsz" :type :int :default :present :as "The number of concurrent migrations that should be made"}
-                                {:option "relation-name" :short "rn" :type :int :default :present :as "The name of the relation in the relational database to be migrated"}]
+                                 :spec ::s/edn}
+                                {:option "batch-size" :short "bsz" :type :int :default :present :as "The number of concurrent migrations that should be made"}]
                   :runs        migrate-relation}]})
 
 (defn -main
