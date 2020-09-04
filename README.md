@@ -1,6 +1,6 @@
 # aerospike-migration
 
-A CLI application to migrate aerospike data from postgres to aero-spike
+A CLI application to migrate aerospike data from postgresql to aerospike
 
 ## Build
 
@@ -48,4 +48,5 @@ be one of the functions defined in the namespace `aerospike-migration.transforme
 
 ## Note
 
-`json` and `jsonb` columns are converted to json before inserting into aerospike and go into aerospike as `MAP`.
+- `json` and `jsonb` columns are converted to json before inserting into aerospike and go into aerospike as `MAP`.
+- Failures are logged into a file named `<relation-name>-debug-logger.txt` in the same directory as the jar.
