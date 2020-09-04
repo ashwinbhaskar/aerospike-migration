@@ -8,8 +8,7 @@
             [camel-snake-kebab.core :as csk]
             [aerospike-clj.client :as aero]
             [aerospike-migration.aerospike :refer [client]])
-  (:import (java.util.function BiConsumer BiFunction)
-           (java.util.concurrent CompletableFuture)))
+  (:import (java.util.function BiFunction)))
 
 (defn- prepare-query
   [columns relation]
@@ -71,15 +70,14 @@
          append)))
 
 (defn- bi-function
-  []
+  [debug-logger]
   (reify BiFunction
     (apply [_ r exception]
       (if (not (nil? exception))
-        (println (str "Exception: " exception))
-        (println (str "Row successfully migrated" r))))))
+        (.write debug-logger (format "Exception: %s exception" exception))))))
 
-(defn- insert-into-aerospike
-  [rows]
+(defn- dump-into-aerospike
+  [rows debug-logger]
   (let [[indexes payloads sets] (reduce
                                   (fn [[index-acc payload-acc set-acc] {:keys [index data set-name]}]
                                     [(conj index-acc index)
@@ -88,10 +86,9 @@
                                   [[] [] []]
                                   rows)
         expirations (repeat (count rows) -1)]
-    (->
-      (aero/put-multiple client indexes sets payloads expirations)
-      (.handle (bi-function))
-      .join)))
+    (-> (aero/put-multiple client indexes sets payloads expirations)
+        (.handle (bi-function debug-logger))
+        .join)))
 
 (defn- migrate-relation
   [mapping [relation v]]
@@ -105,20 +102,22 @@
         slices           (if (contains? v ::s/row-count)
                            (u/slice-lazy rs batch-size (::s/row-count v))
                            (u/slice rs batch-size))]
-    (->> slices
-         (map #(map u/kebab-caseize %))
-         (map #(map sanitize-row %))
-         (map (fn [rows]
-                (map (fn [row]
-                       (let [index-keys (-> (select-keys row (get-in v [::s/pk-info ::s/pk-info.primary-keys]))
-                                            keys)
-                             data       (row->bin (apply #(dissoc row %) index-keys) mapping relation)
-                             index      (index row (::s/pk-info v))]
-                         {:data     data
-                          :index    index
-                          :set-name set-name}))
-                     rows)))
-         (run! insert-into-aerospike))))
+    (println (str "Starting migration of " (name relation)))
+    (with-open [debug-logger (clojure.java.io/writer (format "%s-debug-logger.txt" (name relation)) :append true)]
+      (->> slices
+           (map #(map u/kebab-caseize %))
+           (map #(map sanitize-row %))
+           (map (fn [rows]
+                  (map (fn [row]
+                         (let [index-keys (-> (select-keys row (get-in v [::s/pk-info ::s/pk-info.primary-keys]))
+                                              keys)
+                               data       (row->bin (apply #(dissoc row %) index-keys) mapping relation)
+                               index      (index row (::s/pk-info v))]
+                           {:data               data
+                            :index              index
+                            :set-name           set-name}))
+                       rows)))
+           (run! #(dump-into-aerospike % debug-logger))))))
 
 (defn migrate
   [m]

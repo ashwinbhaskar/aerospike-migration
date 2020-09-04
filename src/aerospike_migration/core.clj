@@ -5,7 +5,8 @@
             [cli-matic.core :as cli]
             [aerospike-migration.relation :as r]
             [aerospike-migration.util :as u]
-            [aerospike-migration.spec :as s])
+            [aerospike-migration.spec :as s]
+            [next.jdbc :as j])
   (:gen-class))
 
 (defn- start-aerospike-client
@@ -53,4 +54,5 @@
 
 (comment
   (start-aerospike-client "localhost" "test")
-  (start-postgres-datasource "127.0.0.1" "5432" "test" "postgres" ""))
+  (start-postgres-datasource "127.0.0.1" "5432" "test" "postgres" "")
+  (j/execute! aerospike-migration.postgres/ds ["INSERT INTO users(first_name, last_name, phone, dob) VALUES(?,?,?,?)"]))
