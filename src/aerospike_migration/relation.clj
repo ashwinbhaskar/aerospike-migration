@@ -95,7 +95,8 @@
   (let [columns          (set (::s/columns v))
         columns-in-query (->> (map name columns)
                               (map #(csk/->snake_case %)))
-        query            (prepare-query columns-in-query (name relation))
+        query            (prepare-query columns-in-query (-> (name relation)
+                                                             csk/->snake_case))
         set-name         (::s/set-name v)
         rs               (j/execute! ds [query])
         batch-size       (::s/batch-size v)
@@ -113,9 +114,9 @@
                                               keys)
                                data       (row->bin (apply #(dissoc row %) index-keys) mapping relation)
                                index      (index row (::s/pk-info v))]
-                           {:data               data
-                            :index              index
-                            :set-name           set-name}))
+                           {:data     data
+                            :index    index
+                            :set-name set-name}))
                        rows)))
            (run! #(dump-into-aerospike % debug-logger))))))
 
