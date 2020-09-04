@@ -1,16 +1,18 @@
-{:users  {:aerospike-migration.spec/set-name "user"
-          :aerospike-migration.spec/columns  [:first-name :last-name :phone :dob]
-          :first-name                        {:aerospike-migration.spec/bin      "first_name"
-                                              :aerospike-migration.spec/function :identity}
-          :last-name                         {:aerospike-migration.spec/bin      "last_name"
-                                              :aerospike-migration.spec/function :identity}
-          :dob                               {:aerospike-migration.spec/bin      "dob"
-                                              :aerospike-migration.spec/function :timestamp->epoch-seconds}
-          :aerospike-migration.spec/pk-info  {:aerospike-migration.spec/pk-info.primary-keys [:phone]
-                                              :aerospike-migration.spec/pk-info.prepend      "user"
-                                              :aerospike-migration.spec/pk-info.append       ""
-                                              :aerospike-migration.spec/pk-info.delimiter    "_"
-                                              :phone                                         {:aerospike-migration.spec/function :identity}}}
+{:users  {:aerospike-migration.spec/set-name   "user"
+          :aerospike-migration.spec/columns    [:first-name :last-name :phone :dob]
+          :first-name                          {:aerospike-migration.spec/bin      "first_name"
+                                                :aerospike-migration.spec/function :identity}
+          :last-name                           {:aerospike-migration.spec/bin      "last_name"
+                                                :aerospike-migration.spec/function :identity}
+          :dob                                 {:aerospike-migration.spec/bin      "dob"
+                                                :aerospike-migration.spec/function :timestamp->epoch-seconds}
+          :aerospike-migration.spec/pk-info    {:aerospike-migration.spec/pk-info.primary-keys [:phone]
+                                                :aerospike-migration.spec/pk-info.prepend      "user"
+                                                :aerospike-migration.spec/pk-info.append       ""
+                                                :aerospike-migration.spec/pk-info.delimiter    "_"
+                                                :phone                                         {:aerospike-migration.spec/function :identity}}
+          :aerospike-migration.spec/batch-size 100
+          :aerospike-migration.spec/row-count  2}
  :movies {:aerospike-migration.spec/set-name "movie"
           :aerospike-migration.spec/columns  [:id :info :release-date :name]
           :info                              {:aerospike-migration.spec/bin      "info"
@@ -24,4 +26,5 @@
                                               :aerospike-migration.spec/pk-info.prepend      ""
                                               :aerospike-migration.spec/pk-info.append       ""
                                               :aerospike-migration.spec/pk-info.delimiter    "_"
-                                              :id                                            {:aerospike-migration.spec/function :->string}}}}
+                                              :id                                            {:aerospike-migration.spec/function :->string}}
+          :aerospike-migration.spec/batch-size 10}}

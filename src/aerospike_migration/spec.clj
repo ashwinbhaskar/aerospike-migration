@@ -10,6 +10,13 @@
 (spec/def ::keyword-seq (spec/and sequential?
                                   #(every? keyword? %)))
 
+(spec/def ::non-negative-integer (spec/and integer?
+                                           #(> % 0)))
+
+(spec/def ::batch-size ::non-negative-integer)
+
+(spec/def ::row-count ::non-negative-integer)
+
 (spec/def ::columns ::keyword-seq)
 
 (spec/def ::function (set (keys t/functions)))
@@ -25,7 +32,7 @@
 
 (spec/def ::validate-columns (fn [m]
                                (let [columns (::columns m)]
-                                 (->> (dissoc m ::columns ::pk-info ::set-name)
+                                 (->> (dissoc m ::columns ::pk-info ::set-name ::batch-size ::row-count)
                                       (every? (fn [[k v]]
                                                 (and (some #(= k %) columns)
                                                      (spec/valid? ::column v))))))))
@@ -48,7 +55,8 @@
 
 (spec/def ::pk-info (spec/keys :req [::pk-info.append ::pk-info.delimiter ::pk-info.delimiter ::pk-info.primary-keys]))
 
-(spec/def ::relation (spec/and (spec/keys :req [::columns ::pk-info ::set-name])
+(spec/def ::relation (spec/and (spec/keys :req [::columns ::pk-info ::set-name ::batch-size]
+                                          :opt [::row-count])
                                ::validate-columns
                                ::validate-primary-keys))
 
