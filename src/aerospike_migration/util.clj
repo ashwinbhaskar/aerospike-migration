@@ -7,8 +7,7 @@
   (:import
     (java.time Instant)
     (java.io PushbackReader)
-    (org.postgresql.util PGobject)
-    (java.sql Timestamp)))
+    (org.postgresql.util PGobject)))
 
 (def mapper (j/object-mapper))
 
@@ -21,6 +20,24 @@
         (with-meta (j/read-value value mapper) {:pgtype type})
         value))
     v))
+
+(defn slice [v n]
+  (let [length (count v)]
+    (if (>= n length)
+      [(into [] v)]
+      (let [m (mod length n)]
+        (conj
+          (mapv #(into [] %) (partition n n v))
+          (into [] (drop (- length m) v)))))))
+
+(defn slice-lazy
+  [lazy-seq batch-size no-of-lines]
+  (if (>= batch-size no-of-lines)
+    [lazy-seq]
+    (let [m (mod no-of-lines batch-size)]
+      (concat
+        (partition batch-size batch-size lazy-seq)
+        [(drop (- no-of-lines m) lazy-seq)]))))
 
 (defn now-utc-unix []
   (-> (Instant/now)
