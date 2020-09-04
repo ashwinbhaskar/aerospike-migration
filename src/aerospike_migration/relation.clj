@@ -8,7 +8,7 @@
             [camel-snake-kebab.core :as csk]
             [aerospike-clj.client :as aero]
             [aerospike-migration.aerospike :refer [client]])
-  (:import (java.util.function BiConsumer)
+  (:import (java.util.function BiConsumer BiFunction)
            (java.util.concurrent CompletableFuture)))
 
 (defn- prepare-query
@@ -24,11 +24,11 @@
 
 (defn- column-value->bin-value
   [mapping relation column-name value]
-  (let [transformer (-> mapping
-                        relation
-                        column-name
-                        ::s/function
-                        t/functions)
+  (let [transformer      (-> mapping
+                             relation
+                             column-name
+                             ::s/function
+                             t/functions)
         transformer-args (-> mapping
                              relation
                              column-name
@@ -70,13 +70,28 @@
          pks
          append)))
 
-(defn- bi-consumer
+(defn- bi-function
   []
-  (reify BiConsumer
-    (accept [_ _ exception]
+  (reify BiFunction
+    (apply [_ r exception]
       (if (not (nil? exception))
         (println (str "Exception: " exception))
-        (println "Row successfully migrated")))))
+        (println (str "Row successfully migrated" r))))))
+
+(defn- insert-into-aerospike
+  [rows]
+  (let [[indexes payloads sets] (reduce
+                                  (fn [[index-acc payload-acc set-acc] {:keys [index data set-name]}]
+                                    [(conj index-acc index)
+                                     (conj payload-acc data)
+                                     (conj set-acc set-name)])
+                                  [[] [] []]
+                                  rows)
+        expirations (repeat (count rows) -1)]
+    (->
+      (aero/put-multiple client indexes sets payloads expirations)
+      (.handle (bi-function))
+      .join)))
 
 (defn- migrate-relation
   [mapping [relation v]]
@@ -84,23 +99,26 @@
         columns-in-query (->> (map name columns)
                               (map #(csk/->snake_case %)))
         query            (prepare-query columns-in-query (name relation))
-        set-name         (::s/set-name v)]
-    (->> (j/execute! ds [query])
-         (map u/kebab-caseize)
-         (map sanitize-row)
-         (map (fn [row]
-                (let [index-keys (-> (select-keys row (get-in v [::s/pk-info ::s/pk-info.primary-keys]))
-                                     keys)
-                      data       (row->bin (apply #(dissoc row %) index-keys) mapping relation)
-                      index      (index row (::s/pk-info v))]
-                  {:data  data
-                   :index index})))
-         (map (fn [{:keys [data index]}]
-                (-> (aero/put client index set-name data -1)
-                    (.whenCompleteAsync (bi-consumer)))))
-         (into-array CompletableFuture)
-         CompletableFuture/allOf
-         .join)))
+        set-name         (::s/set-name v)
+        rs               (j/execute! ds [query])
+        batch-size       (::s/batch-size v)
+        slices           (if (contains? v ::s/row-count)
+                           (u/slice-lazy rs batch-size (::s/row-count v))
+                           (u/slice rs batch-size))]
+    (->> slices
+         (map #(map u/kebab-caseize %))
+         (map #(map sanitize-row %))
+         (map (fn [rows]
+                (map (fn [row]
+                       (let [index-keys (-> (select-keys row (get-in v [::s/pk-info ::s/pk-info.primary-keys]))
+                                            keys)
+                             data       (row->bin (apply #(dissoc row %) index-keys) mapping relation)
+                             index      (index row (::s/pk-info v))]
+                         {:data     data
+                          :index    index
+                          :set-name set-name}))
+                     rows)))
+         (run! insert-into-aerospike))))
 
 (defn migrate
   [m]
