@@ -15,4 +15,6 @@
                  [metosin/jsonista "0.2.7"]
                  [failjure "2.0.0"]]
   :main aerospike-migration.core
+  :aot :all
+  :java-source-paths ["java/src"]
   :repl-options {:init-ns aerospike-migration.core})
