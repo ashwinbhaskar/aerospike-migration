@@ -1,6 +1,6 @@
 # aerospike-migration
 
-A GraalVM compatible CLI application to migrate aerospike data from postgresql to aerospike
+A GraalVM compatible command line application to migrate data from postgresql to aerospike
 
 ## Build
 
