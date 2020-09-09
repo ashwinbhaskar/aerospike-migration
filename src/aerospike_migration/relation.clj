@@ -8,7 +8,8 @@
             [camel-snake-kebab.core :as csk]
             [aerospike-clj.client :as aero]
             [aerospike-migration.aerospike :refer [client]])
-  (:import (java.util.function BiFunction)))
+  (:import (java.util.function BiFunction)
+           (java.util.concurrent CompletableFuture)))
 
 (defn- prepare-query
   [columns relation]
@@ -69,7 +70,7 @@
          pks
          append)))
 
-(defn- bi-function
+(defn- bi-function ^BiFunction
   [debug-logger]
   (reify BiFunction
     (apply [_ r exception]
@@ -85,9 +86,9 @@
                                      (conj set-acc set-name)])
                                   [[] [] []]
                                   rows)
-        expirations (repeat (count rows) -1)]
-    (-> (aero/put-multiple client indexes sets payloads expirations)
-        (.handle (bi-function debug-logger))
+        expirations (repeat (count rows) -1)
+        future (aero/put-multiple client indexes sets payloads expirations)]
+    (-> (.handle ^CompletableFuture future (bi-function debug-logger))
         .join)))
 
 (defn- migrate-relation
