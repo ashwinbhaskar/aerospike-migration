@@ -46,6 +46,21 @@ be one of the functions defined in the namespace `aerospike-migration.transforme
 - `aerospike-migration.spec/batch-size` is the number of rows that will be concurrently sent to aerospike. Increasing this number might starv the number of connections to aerospike.
 - `aerospike-migration.spec/row-count` is an optional key which, if provided, will be used to lazily generate a sequence (each of size `aerospike-migration.spec/batch-size`).
 
+## GRAALVM
+
+This program is graalvm compatible. To generate the native image,
+
+1. `export NATIVE_IMAGE=<path-to>/graalvm-ce-java8-20.2.0/Contents/Home/bin`
+2. Run the native image generator script included in the repo - `./generate-native-image.sh`
+
+The 2nd command will generate a image with the name `aerospike-migration`. You can run it with,
+
+```
+ ./aerospike-migration  --hosts "localhost" --namespace "test" --db-host "127.0.0.1" \
+ --db-port 5432 --db-name "test" --db-user "postgres" --db-pass "" \
+ migrate --edn-filepath "/some-path/sample-mapping.edn" \
+```
+
 ## Note
 
 - `json` and `jsonb` columns are converted to json before inserting into aerospike and go into aerospike as `MAP`.
