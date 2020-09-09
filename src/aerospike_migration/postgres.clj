@@ -1,6 +1,6 @@
 (ns aerospike-migration.postgres
   (:require [mount.core :as m]
-            [hikari-cp.core :as h]
+            [next.jdbc :as jdbc]
             [clojure.tools.logging :as log]))
 
 (defn- jdbc-url
@@ -14,10 +14,10 @@
     password))
 
 (m/defstate ds
-  :start (h/make-datasource {:jdbc-url (jdbc-url
+  :start (jdbc/get-datasource {:jdbcUrl (jdbc-url
                                          (System/getProperty "db_host")
                                          (System/getProperty "db_port")
                                          (System/getProperty "db_name")
                                          (System/getProperty "db_username")
                                          (System/getProperty "db_password"))})
-  :stop (h/close-datasource ds))
+  :stop  nil)
